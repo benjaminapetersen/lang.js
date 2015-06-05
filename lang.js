@@ -32,8 +32,28 @@
         // array
         arrJoin = demethodize(Array.prototype.join),
         arrForEach = demethodize(Array.prototype.forEach),
+        each = arrForEach,
         arrMap = demethodize(Array.prototype.map),
         arrSlice = demethodize(Array.prototype.slice),
+        // TODO: check speed of built in reduce. if slow, perhaps
+        // do not use.
+        arrReduce = //Array.prototype.reduce ?
+                    false ?
+                        demethodize(Array.prototype.reduce) :
+                        function(arr, fn, initial) {
+                            var reduced = undefined;
+                            if(initial) {
+                                reduced = initial;
+                            }
+                            each(arr, function(item, index) {
+                                reduced = fn(reduced, item, index, arr);
+                            });
+                            return reduced;
+                        },
+                        // for loop?
+                        //function(arr, fn, initial) {
+                        //
+                        //},
         // object
         hasProp = Function.prototype.call.bind(Object.prototype.hasOwnProperty),
         objKeys = function(obj) {
@@ -87,7 +107,7 @@
             },
             array: {
                 // find
-                // reduce
+                reduce: arrReduce,
                 // any / every
                 // all / some
                 // filter

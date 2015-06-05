@@ -1,8 +1,5 @@
-// Borrowing spec from Exercism to start....
-// execute tests with :
-// jasmine-node .
-
 var lang = require('./lang.js');
+
 
 describe("lang", function() {
 
@@ -101,6 +98,39 @@ describe("lang", function() {
                 expect(arr).toEqual(['aa', 'bb', 'cc']);
             });
         });
+
+        describe('.reduce', function() {
+            var reduce = lang.array.reduce;
+            it('should reduce an array to a single output value', function() {
+                var sum = reduce([5,10,15], function(prev, current, i, array) {
+                    return prev + current;
+                });
+
+                expect(sum).toEqual(30);
+            });
+            it('should take an optional initial value as the third argument', function() {
+                var sum = reduce([5,10,15], function(prev, current, i, array) {
+                    return prev + current;
+                }, 40);
+
+                expect(sum).toEqual(70);
+            });
+            it('should return the optional initial value if an empty array is provided', function() {
+                var sum = reduce([], function(prev, current, i, array) {
+                    return prev + current;
+                }, 40);
+
+                expect(sum).toEqual(40);
+            });
+            it('should return undefined if an empty array is provided with no initial value', function() {
+                var sum = reduce([], function(prev, current, i, array) {
+                    return prev + current;
+                });
+                // note: this is not true of native Array.prototype.reduce!
+                // if an empty array and no initial value, it will throw a TypeError
+                expect(sum).toEqual(undefined);
+            });
+        })
 
     });
 

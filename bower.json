@@ -1,0 +1,22 @@
+{
+  "name": "lang.js",
+  "main": "lang.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/benjaminapetersen/lang.js",
+  "authors": [
+    "Benjamin A. Petersen <ben@benjaminapetersen.me>"
+  ],
+  "description": "An exercise in creating a simple library of basic functional tools",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "chai": "~3.0.0",
+    "mocha": "~2.2.5"
+  }
+}

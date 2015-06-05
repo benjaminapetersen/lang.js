@@ -1,0 +1,29 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mocha Tests</title>
+    <link rel="stylesheet" href="./bower_components/mocha/mocha.css" />
+
+    <script src="./bower_components/chai/chai.js"></script>
+    <script src="./bower_components/mocha/mocha.js"></script>
+    <!-- ??
+    <script src="expect.js"></script>
+    -->
+    <script src="./lang.js"></script>
+
+</head>
+<body>
+    <p>lang.js</p>
+    <div id="mocha"></div>
+    <script>
+        mocha.setup('bdd');
+        //mocha.setup('tdd');
+    </script>
+    <script src="./lang_test.spec.browser.js"></script>
+    <script>
+        mocha.checkLeaks();
+        // mocha.globals(['jQuery']);
+        mocha.run();
+    </script>
+</body>
+</html>
