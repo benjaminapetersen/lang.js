@@ -56,6 +56,45 @@ describe("lang", function() {
             });
         });
 
+        describe('.empty', function() {
+            var empty = lang.array.empty;
+            it('should return true if the array is empty', function() {
+                expect(empty([])).to.eql(true);
+            });
+            it('should return false if the array is not empty', function() {
+                expect(empty([1,2,3])).to.eql(false);
+                expect(empty([undefined])).to.eql(false);
+                expect(empty([null])).to.eql(false);
+                expect(empty([[]])).to.eql(false);
+                expect(empty([{}])).to.eql(false);
+            });
+        });
+
+        describe('.first', function() {
+            var first = lang.array.first;
+            it('should return the first item in an array', function() {
+                expect(first([22,33,44])).to.equal(22);
+            });
+        });
+        describe('.butFirst', function() {
+            var butFirst = lang.array.butFirst;
+            it('should return the everything but the first item in an array', function() {
+                expect(butFirst([22,33,44])).to.eql([33,44]);
+            });
+        });
+        describe('.last', function() {
+            var last = lang.array.last;
+            it('should return the last item in an array', function() {
+                expect(last([22,33,44])).to.eql(44);
+            });
+        });
+        describe('.butLast', function() {
+            var butLast = lang.array.butLast;
+            it('should return the everything but the last item in an array', function() {
+                expect(butLast([22,33,44])).to.eql([22,33]);
+            });
+        });
+
         describe('.each', function() {
             var each = lang.array.each;
             it('should invoke callback once per item in array', function() {
@@ -78,12 +117,12 @@ describe("lang", function() {
             it('should invoke callback once per item in array', function() {
                 var count = 0;
                 map([1,2,3,4], function() {
-                    count++;
+                    return count++;
                 });
                 expect(count).to.eql(4);
             });
             it('should return a new array of mutated items', function() {
-                var arr = map(['a', 'b', 'c'], function(item) {
+                var arr = map(['a', 'b', 'c'], function(item, i, values) {
                         return item + item;
                     });
                 expect(arr).to.eql(['aa', 'bb', 'cc']);
@@ -92,10 +131,10 @@ describe("lang", function() {
 
         describe('.reduce', function() {
             var reduce = lang.array.reduce;
-            it('should reduce an array to a single output value', function() {
+            it('should reduce an array to a single output value based on the third argument accumulator', function() {
                 var sum = reduce([5,10,15], function(prev, current, i, array) {
                     return prev + current;
-                });
+                }, 0);
 
                 expect(sum).to.eql(30);
             });
@@ -120,6 +159,33 @@ describe("lang", function() {
                 // note: this is not true of native Array.prototype.reduce!
                 // if an empty array and no initial value, it will throw a TypeError
                 expect(sum).to.eql(undefined);
+            });
+        });
+
+        describe('filter', function() {
+            var filter = lang.array.filter;
+            it('should iterate an array, returning all elements predicate returns truthy for', function() {
+                var items = filter([0,50,75,101,103,105], function(val) {
+                    return (val > 100);
+                });
+                expect(items).to.eql([101,103,105]);
+            });
+            xit('should call predicate with third argument context if provided', function() {
+                // This test is a nice to have. will worry about it later.
+            });
+        });
+
+        describe('.find', function() {
+            var find = lang.array.find;
+            it('should return the first item in a collection for which the predicate returns true', function() {
+                expect(find([1,2,3,4,5,6,7], function(item, i) {
+                    return item === 6;
+                })).to.eql(6);
+            });
+            it('should return undefind if no item matches the predicate test', function() {
+                expect(find([1,2,3,4,5], function(item, i) {
+                    return item === 99999;
+                })).to.equal(undefined);
             });
         })
 

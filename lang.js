@@ -1,5 +1,5 @@
 'use strict';
-(function () {
+(function (root, undef) {
 
     var // helpers
         notImpl = function() {
@@ -16,11 +16,18 @@
         // may change demethodize to 'unbind'?
         // or demethodize = function(fn) { return Function.prototype.call.bind(fn) }
         demethodize = Function.prototype.bind.bind(Function.prototype.call),
+        isUndef = function(val) {
+            return value === undef;
+        },
+        isDef = function() {
+            return complement(isUndef);
+        },
         // core
         noop = function() {},
         // fn
         identity = function(value) { return value; },
         constant = function(value) { return function() { return value; }},
+        complement = function(fn) { return !apply(fn, undef, arguments) },
         funApply = demethodize(Function.prototype.apply),
         funCall = demethodize(Function.prototype.call),
         // string
@@ -31,29 +38,126 @@
         strToUpperCase = demethodize(String.prototype.toUpperCase),
         // array
         arrJoin = demethodize(Array.prototype.join),
-        arrForEach = demethodize(Array.prototype.forEach),
-        each = arrForEach,
-        arrMap = demethodize(Array.prototype.map),
         arrSlice = demethodize(Array.prototype.slice),
-        // TODO: check speed of built in reduce. if slow, perhaps
-        // do not use.
+        arrPush = demethodize(Array.prototype.push),
+        arrForEach = //Array.prototype.forEach ?
+                    false ?
+                        demethodize(Array.prototype.forEach) :
+                        function(arr, fn) {
+                            var i = 0,
+                                length;
+                            if(arrEmpty(arr)) {
+                                return arr;
+                            }
+                            length = arr.length;
+                            for(i; i < length; ++i) {
+                                fn(arr[i], i);
+                            }
+                        },
+        // NOTE: reduce is reportedly the most powerful of iterators, and other
+        // iterator functions should really be implemented in terms of it.  My
+        // initial go at iterators impements all in terms of each, which seemed
+        // the more logical base function to use.
+        // TODO: decide if want to prefer built in reduce.
+        // problem is built in will err on one test due to requiring initial val
         arrReduce = //Array.prototype.reduce ?
                     false ?
                         demethodize(Array.prototype.reduce) :
-                        function(arr, fn, initial) {
-                            var reduced = undefined;
-                            if(initial) {
-                                reduced = initial;
-                            }
-                            each(arr, function(item, index) {
-                                reduced = fn(reduced, item, index, arr);
+                        function(arr, fn, memo) {
+                            // this is ugly, would prefer to fail gracefully?
+                            // prob good practice to always provide the intended
+                            // memo (type)
+                            // if(isUndef(memo)) {
+                            //     return new TypeError('Reduce of empty array with no initial value');
+                            // }
+                            // if(arrEmpty(arr)) {
+                            //     return memo;
+                            // }
+                            arrForEach(arr, function(item, index) {
+                                memo = fn(memo, item, index, arr);
                             });
-                            return reduced;
+                            return memo;
                         },
                         // for loop?
                         //function(arr, fn, initial) {
                         //
                         //},
+                        // recursive?
+                        // function(arr, fn, initial) {
+                        //   arrEmpty(arr) ?
+                        //      ... :
+                        //      ...
+                        // },
+        arrMap = //Array.prototype.map ?
+                false ?
+                    demethodize(Array.prototype.map) :
+                    function(arr, fn) {
+                        return arrReduce(arr, function(prev, current, i, list) {
+                            // gotcha here, push returns the new length, not a new
+                            // array including the added items.
+                            arrPush(prev, fn(current, i, list));
+                            return prev;
+                        }, []);
+                    },
+        arrFilter = // Array.prototype.filter ?
+                    false ?
+                        demethodize(Array.prototype.filter) :
+                        function(arr, fn, context) {
+                            return arrReduce(arr, function(prev, current, i, list) {
+                                if(fn(current, i, list)) {
+                                    arrPush(prev, current);
+                                }
+                                return prev;
+                            }, []);
+                        },
+        arrFind = // Array.prototype.find ?
+                    false ?
+                        demethodize(Array.prototype.find) :
+                        function(arr, fn, context) {
+                            var i=0,
+                                length,
+                                found;
+                            if(arrEmpty(arr)) {
+                                return null;
+                            }
+                            arrForEach(arr, function(item, i, arr) {
+                                if(!!fn(item, i)) {
+                                    if(!found) {
+                                        found = item;
+                                    }
+                                }
+                            });
+                            return found;
+                        },
+        arrEmpty = function(arr) {
+            return !(arr.length > 0);
+        },
+        arrFirst = function(arr) {
+            return (
+                arrEmpty(arr) ?
+                    null :
+                    arr[0]);
+        },
+        // sometimes butFirst
+        arrRest = function(arr) {
+            return (
+                arrEmpty(arr) ?
+                    null :
+                    arrSlice(arr, 1));
+        },
+        arrButFirst = arrRest,
+        arrLast = function(arr) {
+            return (
+                    arrEmpty(arr) ?
+                        null :
+                        arr[arr.length-1]);
+        },
+        arrButLast = function(arr) {
+            return (
+                    arrEmpty(arr) ?
+                        null :
+                        arrSlice(arr, 0, -1));
+        },
         // object
         hasProp = Function.prototype.call.bind(Object.prototype.hasOwnProperty),
         objKeys = function(obj) {
@@ -106,15 +210,23 @@
                 indexOf: strIndexOf
             },
             array: {
-                // find
-                reduce: arrReduce,
-                // any / every
-                // all / some
-                // filter
+                first: arrFirst,
+                last: arrLast,
+                butFirst: arrButFirst,
+                butLast: arrButLast,
+                push: arrPush,
                 slice: arrSlice,
                 join: arrJoin,
+                find: arrFind,
+                reduce: arrReduce,
+                // any / some
+                // every / all
+                filter: arrFilter,
                 each: arrForEach,
-                map: arrMap
+                map: arrMap,
+                empty: arrEmpty
+                // first: arrFirst,
+                // rest: arrRest
             },
             object: {
                 // find
@@ -131,7 +243,12 @@
                 apply: funApply,
                 // bind
                 identity: identity,
-                constant: constant
+                constant: constant,
+                complement: complement
+            },
+            is: {
+                // undef: isUndef,
+                // def: isDef
             },
             to: {
                 array: objToArray

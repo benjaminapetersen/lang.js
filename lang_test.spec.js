@@ -101,7 +101,7 @@ describe("lang", function() {
 
         describe('.reduce', function() {
             var reduce = lang.array.reduce;
-            it('should reduce an array to a single output value', function() {
+            it('should reduce an array to a single output value based on the third argument accumulator', function() {
                 var sum = reduce([5,10,15], function(prev, current, i, array) {
                     return prev + current;
                 });
