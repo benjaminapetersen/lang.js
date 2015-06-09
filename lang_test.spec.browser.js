@@ -187,6 +187,31 @@ describe("lang", function() {
                     return item === 99999;
                 })).to.equal(undefined);
             });
+        });
+
+        describe('.some/.any', function() {
+            var some = lang.array.some;
+            it('should return true if any item in the array passes the test predicate (truthy)', function() {
+                expect(some([1,2,3,4], function(item, i) {
+                    return item === 3;
+                })).to.eql(true)
+            });
+
+            xit('should call predicate with third argument context if provided')
+        });
+
+        describe('.every/.all', function() {
+            var every = lang.array.every;
+            // should it call the predicate once for each item? not necessary if a fail happens!
+            it('should return true if all items in the array pass the test predicate', function() {
+                expect(every([1,2,3,4], function(item, i) {
+                    return item < 10;
+                })).to.eql(true);
+
+                expect(every([1,2,3,4], function(item, i) {
+                    return item > 10;
+                })).to.eql(false);
+            });
         })
 
     });

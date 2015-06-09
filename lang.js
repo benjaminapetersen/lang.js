@@ -114,9 +114,7 @@
                     false ?
                         demethodize(Array.prototype.find) :
                         function(arr, fn, context) {
-                            var i=0,
-                                length,
-                                found;
+                            var found;
                             if(arrEmpty(arr)) {
                                 return null;
                             }
@@ -128,6 +126,35 @@
                                 }
                             });
                             return found;
+                        },
+        arrSome = // Array.prototype.some ?
+                    false ?
+                        demethodize(Array.prototype.some) :
+                        function(arr, fn, context) {
+                            return !!arrFind(arr, function(item, i, arr) {
+                                return fn(item, i);
+                            });
+                        },
+        arrEvery = // Array.prototype.every ?
+                    false ?
+                        demethodize(Array.prototype.every) :
+                        function(arr, fn, context) {
+                            // would rather write in terms of each or reduce,
+                            // but the for loop makes it easy to return false &
+                            // stop execution w/o going through all items.
+                            var i = 0,
+                                length;
+                            if(arrEmpty(arr)) {
+                                return false;
+                            }
+                            length = arr.length;
+                            for(i; i < length; ++i) {
+                                if(!fn(arr[i], i)){
+                                    return false;
+                                }
+                            }
+                            return true;
+
                         },
         arrEmpty = function(arr) {
             return !(arr.length > 0);
@@ -212,21 +239,19 @@
             array: {
                 first: arrFirst,
                 last: arrLast,
-                butFirst: arrButFirst,
+                butFirst: arrButFirst,      // rest is a common alias
                 butLast: arrButLast,
                 push: arrPush,
                 slice: arrSlice,
                 join: arrJoin,
                 find: arrFind,
                 reduce: arrReduce,
-                // any / some
-                // every / all
+                some: arrSome,               // any is a common alias
+                every: arrEvery,             // all is a common alias
                 filter: arrFilter,
                 each: arrForEach,
                 map: arrMap,
                 empty: arrEmpty
-                // first: arrFirst,
-                // rest: arrRest
             },
             object: {
                 // find
