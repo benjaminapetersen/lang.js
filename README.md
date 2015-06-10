@@ -29,4 +29,4 @@ Include script in browser
 Run the tests with:
 
 `cd /path/to/lang.js/`
-`jasmine-node ./lang_test.spec.js --verbose`
+`jasmine-node ./test/lang_test.spec.js --verbose`

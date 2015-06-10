@@ -63,30 +63,45 @@
         arrReduce = //Array.prototype.reduce ?
                     false ?
                         demethodize(Array.prototype.reduce) :
+                        // for() loop version
                         function(arr, fn, memo) {
-                            // this is ugly, would prefer to fail gracefully?
-                            // prob good practice to always provide the intended
-                            // memo (type)
-                            // if(isUndef(memo)) {
-                            //     return new TypeError('Reduce of empty array with no initial value');
-                            // }
-                            // if(arrEmpty(arr)) {
-                            //     return memo;
-                            // }
-                            arrForEach(arr, function(item, index) {
-                                memo = fn(memo, item, index, arr);
-                            });
+                            var i = 0,
+                                length = arr.length;
+                            for(i; i < length; i++) {
+                                memo = fn(memo, arr[i], i, arr);
+                            }
                             return memo;
                         },
-                        // for loop?
-                        //function(arr, fn, initial) {
-                        //
-                        //},
-                        // recursive?
-                        // function(arr, fn, initial) {
-                        //   arrEmpty(arr) ?
-                        //      ... :
-                        //      ...
+                        // affForEach() version
+                        // function(arr, fn, memo) {
+                        //     // this is ugly, would prefer to fail gracefully?
+                        //     // prob good practice to always provide the intended
+                        //     // memo (type)
+                        //     // if(isUndef(memo)) {
+                        //     //     return new TypeError('Reduce of empty array with no initial value');
+                        //     // }
+                        //     // if(arrEmpty(arr)) {
+                        //     //     return memo;
+                        //     // }
+                        //     arrForEach(arr, function(item, index) {
+                        //         memo = fn(memo, item, index, arr);
+                        //     });
+                        //     return memo;
+                        // },
+                        // recursive version.
+                        // - dangerous prior to es6 due to lack of tail recursion/stack overflow
+                        // function(arr, fn, memo) {
+                        //     return (
+                        //         function recursor(iter) {
+                        //             // last call just returns memo as it is.
+                        //             if(iter > (arr.length-1)) {
+                        //                 return memo;
+                        //             }
+                        //             // every recursion(iteration) runs the function, doesn't itself keep track
+                        //             // of its place in the list.
+                        //             memo = fn(memo, arr[iter], iter, arr);
+                        //             return recursor(iter+1);
+                        //         })(0);
                         // },
         arrMap = //Array.prototype.map ?
                 false ?
@@ -187,8 +202,25 @@
         },
         // object
         hasProp = Function.prototype.call.bind(Object.prototype.hasOwnProperty),
-        objKeys = function(obj) {
-            return Object.keys(obj);
+        objKeys =   Object.keys ?
+                        function(obj) {
+                           return Object.keys(obj);
+                        } :
+                        function(obj) {
+                            var result = [],
+                                prop;
+                            for(prop in obj) {
+                                if(hasProp(obj, prop)) {
+                                    result.push(prop);
+                                }
+                            }
+                            return result;
+                        },
+        objEachOwned = function(obj, fn) {
+            var keys = objKeys(obj);
+            arrForEach(keys, function(key) {
+                fn(obj[key], key, obj);
+            });
         },
         objToArray = function(obj) {
             var arr = [];
@@ -261,7 +293,8 @@
                 // filter
                 keys: objKeys,
                 map: objMap,
-                each: objEach
+                each: objEach,
+                eachOwned: objEachOwned
             },
             fn: {
                 call: funCall,

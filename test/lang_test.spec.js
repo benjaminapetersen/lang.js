@@ -1,4 +1,4 @@
-var lang = require('./lang.js');
+var lang = require('../src/lang.js');
 
 
 describe("lang", function() {

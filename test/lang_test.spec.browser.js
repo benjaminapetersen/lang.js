@@ -216,13 +216,26 @@ describe("lang", function() {
 
     });
 
-    // describe('lang.obj', function() {
-    //     describe('.keys', function() {
-    //         var keys = lang.object.keys;
-    //         it('should return a list of the objects keys', function() {
-    //             expect(keys({a:'a', b:'b', kitten: 'meow'})).toEqual(['a','b','kitten']);
-    //         });
-    //     });
+    describe('lang.obj', function() {
+        describe('.keys', function() {
+            var keys = lang.object.keys;
+            it('should return a list of the objects keys', function() {
+                expect(keys({a:'a', b:'b', kitten: 'meow'})).to.eql(['a','b','kitten']);
+            });
+        });
+        describe('.eachOwned', function() {
+            var eachOwned = lang.object.eachOwned;
+            it('should call the predicate function once for each of the objects own keys', function() {
+                var count = 0,
+                    obj = {a:1,b:2,c:3};
+                eachOwned(obj, function(value, key, object) {
+                    count++;
+                    expect(object[key]).to.eql(object[key]);
+                    expect(value).to.eql(obj[key]);
+                });
+                expect(count).to.eql(3);
+            });
+        })
     //     describe('.map', function() {
     //         var map = lang.object.map;
     //         it('should return an array of new values from mapped object', function() {
@@ -255,7 +268,7 @@ describe("lang", function() {
     //         });
 
     //     });
-    // });
+    });
 
     // describe('.string', function() {
     //     describe('.indexOf', function() {
