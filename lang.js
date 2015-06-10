@@ -43,6 +43,7 @@
         arrForEach = //Array.prototype.forEach ?
                     false ?
                         demethodize(Array.prototype.forEach) :
+                        // for() loop version, imperative
                         function(arr, fn) {
                             var i = 0,
                                 length;
@@ -54,6 +55,16 @@
                                 fn(arr[i], i);
                             }
                         },
+                        // recursive version
+                        // function(arr, fn) {
+                        //     return (function loop(iter) {
+                        //         if(iter >= arr.length) {
+                        //             return undefined;
+                        //         }
+                        //         fn(arr[iter], iter, arr);
+                        //         loop(iter++);
+                        //     })(0);
+                        // },
         // NOTE: reduce is reportedly the most powerful of iterators, and other
         // iterator functions should really be implemented in terms of it.  My
         // initial go at iterators impements all in terms of each, which seemed
@@ -63,7 +74,7 @@
         arrReduce = //Array.prototype.reduce ?
                     false ?
                         demethodize(Array.prototype.reduce) :
-                        // for() loop version
+                        // for() loop version, imperative
                         function(arr, fn, memo) {
                             var i = 0,
                                 length = arr.length;
@@ -106,6 +117,7 @@
         arrMap = //Array.prototype.map ?
                 false ?
                     demethodize(Array.prototype.map) :
+                    // arrReduce version
                     function(arr, fn) {
                         return arrReduce(arr, function(prev, current, i, list) {
                             // gotcha here, push returns the new length, not a new
@@ -114,6 +126,20 @@
                             return prev;
                         }, []);
                     },
+                    // recursive version
+                    // function(arr, fn) {
+                    //     return (function loop(iter, product) {
+                    //         if(iter >= arr.length) {
+                    //             return product;
+                    //         }
+                    //         // TODO: utility push(arr, item) that returns the array.
+                    //         // that would make the following two lines a one liner,
+                    //         // removing imperative:
+                    //         //  - loop(iter + 1, pushed(product, fn(arr[iter], iter, arr))
+                    //         product.push(fn(arr[iter], iter, arr));
+                    //         loop(iter+1, product);
+                    //     })(0, []);
+                    // },
         arrFilter = // Array.prototype.filter ?
                     false ?
                         demethodize(Array.prototype.filter) :
@@ -251,9 +277,6 @@
             // namespace?
             //core: {},
             // core utility methods
-            //  constant: notImpl,
-            //  identity: notImpl,
-            //  noop: notImpl,
             // core functional iterators
             // core composition methods
             //  bind: notImpl,
@@ -305,8 +328,8 @@
                 complement: complement
             },
             is: {
-                // undef: isUndef,
-                // def: isDef
+                undef: isUndef,
+                def: isDef
             },
             to: {
                 array: objToArray

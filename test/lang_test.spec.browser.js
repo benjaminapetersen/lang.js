@@ -270,50 +270,50 @@ describe("lang", function() {
     //     });
     });
 
-    // describe('.string', function() {
-    //     describe('.indexOf', function() {
-    //         var indexOf = lang.string.indexOf;
-    //         it('should return the index of a letter in a string', function() {
-    //             expect(indexOf("You're nowt but a ninnyhammer, Sam Gamgee", "Sam Gamgee")).toBe(31);
-    //             expect(indexOf("You're nowt but a ninnyhammer, Sam Gamgee", "Hobgoblin")).toBe(-1);
-    //             expect(indexOf("You're nowt but a ninnyhammer, Sam Gamgee", "You")).toBe(0);
-    //         });
-    //     });
+    describe('.string', function() {
+        describe('.indexOf', function() {
+            var indexOf = lang.string.indexOf;
+            it('should return the index of a letter in a string', function() {
+                expect(indexOf("You're nowt but a ninnyhammer, Sam Gamgee", "Sam Gamgee")).to.eql(31);
+                expect(indexOf("You're nowt but a ninnyhammer, Sam Gamgee", "Hobgoblin")).to.eql(-1);
+                expect(indexOf("You're nowt but a ninnyhammer, Sam Gamgee", "You")).to.eql(0);
+            });
+        });
 
-    //     describe('.lower', function() {
-    //         var lower = lang.string.lower;
-    //         it('should lowercase a string', function() {
-    //             expect(lower('Foo')).toBe('foo');
-    //             expect(lower('FOo')).toBe('foo');
-    //             expect(lower('FOO')).toBe('foo');
-    //         });
-    //     });
+        describe('.lower', function() {
+            var lower = lang.string.lower;
+            it('should lowercase a string', function() {
+                expect(lower('Foo')).to.eql('foo');
+                expect(lower('FOo')).to.eql('foo');
+                expect(lower('FOO')).to.eql('foo');
+            });
+        });
 
-    //     describe('.upper', function() {
-    //         var upper = lang.string.upper;
-    //         it('should uppercase a string', function() {
-    //             expect(upper('bar')).toBe('BAR');
-    //             expect(upper('bAr')).toBe('BAR');
-    //             expect(upper('Bar')).toBe('BAR');
-    //         })
-    //     });
+        describe('.upper', function() {
+            var upper = lang.string.upper;
+            it('should uppercase a string', function() {
+                expect(upper('bar')).to.eql('BAR');
+                expect(upper('bAr')).to.eql('BAR');
+                expect(upper('Bar')).to.eql('BAR');
+            })
+        });
 
-    //     describe('.split', function() {
-    //         var split = lang.string.split;
-    //         it('should split a string by a given separator', function() {
-    //             expect(split('Shizzle Snap', ' ')).toEqual(['Shizzle', 'Snap']);
-    //             expect(split('Shizzle&Snap', '&')).toEqual(['Shizzle', 'Snap']);
-    //             expect(split('a^b^c', '^')).toEqual(['a', 'b', 'c']);
-    //         });
-    //     });
+        describe('.split', function() {
+            var split = lang.string.split;
+            it('should split a string by a given separator', function() {
+                expect(split('Shizzle Snap', ' ')).to.eql(['Shizzle', 'Snap']);
+                expect(split('Shizzle&Snap', '&')).to.eql(['Shizzle', 'Snap']);
+                expect(split('a^b^c', '^')).to.eql(['a', 'b', 'c']);
+            });
+        });
 
-    //     describe('.slice', function() {
-    //         var slice = lang.string.slice;
-    //         it('should slice a string by beginning and ending params', function() {
-    //             expect(slice("You're nowt but a ninnyhammer, Sam Gamgee", 7, 29)).toBe('nowt but a ninnyhammer');
-    //         });
-    //     });
+        describe('.slice', function() {
+            var slice = lang.string.slice;
+            it('should slice a string by beginning and ending params', function() {
+                expect(slice("You're nowt but a ninnyhammer, Sam Gamgee", 7, 29)).to.eql('nowt but a ninnyhammer');
+            });
+        });
 
-    // });
+    });
 
 });
