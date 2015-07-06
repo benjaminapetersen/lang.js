@@ -13,9 +13,9 @@
                 console.log(msg);
             }
         },
-        // may change demethodize to 'unbind'?
-        // or demethodize = function(fn) { return Function.prototype.call.bind(fn) }
-        demethodize = Function.prototype.bind.bind(Function.prototype.call),
+        // may change unbind to 'unbind'?
+        // or unbind = function(fn) { return Function.prototype.call.bind(fn) }
+        unbind = Function.prototype.bind.bind(Function.prototype.call),
         isUndef = function(val) {
             return value === undef;
         },
@@ -28,21 +28,21 @@
         identity = function(value) { return value; },
         constant = function(value) { return function() { return value; }},
         complement = function(fn) { return !apply(fn, undef, arguments) },
-        funApply = demethodize(Function.prototype.apply),
-        funCall = demethodize(Function.prototype.call),
+        funApply = unbind(Function.prototype.apply),
+        funCall = unbind(Function.prototype.call),
         // string
-        strSplit = demethodize(String.prototype.split),
-        strSlice = demethodize(String.prototype.slice),
-        strIndexOf = demethodize(String.prototype.indexOf),
-        strToLowerCase = demethodize(String.prototype.toLowerCase),
-        strToUpperCase = demethodize(String.prototype.toUpperCase),
+        strSplit = unbind(String.prototype.split),
+        strSlice = unbind(String.prototype.slice),
+        strIndexOf = unbind(String.prototype.indexOf),
+        strToLowerCase = unbind(String.prototype.toLowerCase),
+        strToUpperCase = unbind(String.prototype.toUpperCase),
         // array
-        arrJoin = demethodize(Array.prototype.join),
-        arrSlice = demethodize(Array.prototype.slice),
-        arrPush = demethodize(Array.prototype.push),
+        arrJoin = unbind(Array.prototype.join),
+        arrSlice = unbind(Array.prototype.slice),
+        arrPush = unbind(Array.prototype.push),
         arrForEach = //Array.prototype.forEach ?
                     false ?
-                        demethodize(Array.prototype.forEach) :
+                        unbind(Array.prototype.forEach) :
                         function(arr, fn) {
                             var i = 0,
                                 length;
@@ -62,7 +62,7 @@
         // problem is built in will err on one test due to requiring initial val
         arrReduce = //Array.prototype.reduce ?
                     false ?
-                        demethodize(Array.prototype.reduce) :
+                        unbind(Array.prototype.reduce) :
                         // for() loop version
                         function(arr, fn, memo) {
                             var i = 0,
@@ -105,7 +105,7 @@
                         // },
         arrMap = //Array.prototype.map ?
                 false ?
-                    demethodize(Array.prototype.map) :
+                    unbind(Array.prototype.map) :
                     function(arr, fn) {
                         return arrReduce(arr, function(prev, current, i, list) {
                             // gotcha here, push returns the new length, not a new
@@ -116,7 +116,7 @@
                     },
         arrFilter = // Array.prototype.filter ?
                     false ?
-                        demethodize(Array.prototype.filter) :
+                        unbind(Array.prototype.filter) :
                         function(arr, fn, context) {
                             return arrReduce(arr, function(prev, current, i, list) {
                                 if(fn(current, i, list)) {
@@ -127,7 +127,7 @@
                         },
         arrFind = // Array.prototype.find ?
                     false ?
-                        demethodize(Array.prototype.find) :
+                        unbind(Array.prototype.find) :
                         function(arr, fn, context) {
                             var found;
                             if(arrEmpty(arr)) {
@@ -144,7 +144,7 @@
                         },
         arrSome = // Array.prototype.some ?
                     false ?
-                        demethodize(Array.prototype.some) :
+                        unbind(Array.prototype.some) :
                         function(arr, fn, context) {
                             return !!arrFind(arr, function(item, i, arr) {
                                 return fn(item, i);
@@ -152,7 +152,7 @@
                         },
         arrEvery = // Array.prototype.every ?
                     false ?
-                        demethodize(Array.prototype.every) :
+                        unbind(Array.prototype.every) :
                         function(arr, fn, context) {
                             // would rather write in terms of each or reduce,
                             // but the for loop makes it easy to return false &
